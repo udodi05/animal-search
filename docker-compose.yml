@@ -1,0 +1,22 @@
+services:
+  couchdb:
+    image: couchdb:3
+    restart: always
+    container_name: couchdb
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=admin
+    ports:
+      - "5984:5984"
+    volumes:
+      - couchdb_data:/opt/couchdb/data
+  web:
+    build: .
+    depends_on:
+      - couchdb
+    environment:
+      - FLASK_ENV=production
+    ports:
+      - "5001:5000"
+volumes:
+  couchdb_data:

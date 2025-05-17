@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Animal Info App</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 700px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        padding: 32px 24px 24px 24px;
+        animation: fadeIn 1s;
+      }
+      h1 {
+        color: #f76b1c;
+        text-align: center;
+        margin-bottom: 24px;
+        letter-spacing: 2px;
+      }
+      form,
+      #randomBtn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      input[type="text"] {
+        padding: 10px 14px;
+        border: 1px solid #fda085;
+        border-radius: 6px;
+        font-size: 1em;
+        outline: none;
+        transition: border 0.2s;
+      }
+      input[type="text"]:focus {
+        border: 1.5px solid #f76b1c;
+      }
+      button {
+        background: linear-gradient(90deg, #fda085 0%, #f76b1c 100%);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 18px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.1s;
+        box-shadow: 0 2px 8px rgba(253, 160, 133, 0.08);
+      }
+      button:hover {
+        background: linear-gradient(90deg, #f76b1c 0%, #fda085 100%);
+        transform: translateY(-2px) scale(1.04);
+      }
+      #result {
+        margin-top: 24px;
+        padding: 18px 16px;
+        background: #fff7f0;
+        border: 1px solid #fda085;
+        border-radius: 10px;
+        min-height: 60px;
+        box-shadow: 0 2px 8px rgba(253, 160, 133, 0.06);
+        animation: fadeIn 0.7s;
+      }
+      .animal-info {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 18px;
+        animation: fadeInUp 0.7s;
+      }
+      .animal-info img {
+        max-width: 160px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(253, 160, 133, 0.13);
+        background: #fff;
+        animation: fadeIn 1s;
+      }
+      .animal-info div {
+        max-width: 500px;
+      }
+      h2 {
+        margin: 0 0 8px 0;
+        color: #f76b1c;
+      }
+      h3 {
+        color: #f76b1c;
+        margin-bottom: 10px;
+      }
+      .breed-list {
+        margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        animation: fadeInUp 0.7s;
+      }
+      .breed-item {
+        display: flex;
+        align-items: center;
+        background: #fff3e6;
+        border-radius: 8px;
+        padding: 8px 14px;
+        box-shadow: 0 1px 4px rgba(253, 160, 133, 0.08);
+        min-width: 180px;
+        animation: fadeIn 1s;
+      }
+      .breed-item img {
+        max-width: 60px;
+        border-radius: 6px;
+        margin-right: 10px;
+        background: #fff;
+      }
+      .breed-item span {
+        font-size: 1.08em;
+        color: #333;
+      }
+      .breed-item .emoji {
+        font-size: 2em;
+        margin-right: 10px;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Acada Animal Information App</h1>
+      <form id="animalForm">
+        <label for="animalName">Enter Animal Name:</label>
+        <input type="text" id="animalName" name="animalName" required />
+        <button type="submit">Search</button>
+      </form>
+      <button type="button" id="randomBtn">Random Animal</button>
+      <div id="result"></div>
+    </div>
+    <script>
+      function fadeInResult() {
+        const resultDiv = document.getElementById("result");
+        resultDiv.style.opacity = 0;
+        setTimeout(() => {
+          resultDiv.style.transition = "opacity 0.7s";
+          resultDiv.style.opacity = 1;
+        }, 50);
+      }
+      function renderAnimalResult(result) {
+        const resultDiv = document.getElementById("result");
+        resultDiv.innerHTML = "";
+        if (result.error) {
+          resultDiv.innerHTML = `<p style="color: red;">${result.error}</p>`;
+        } else {
+          const { name, info, image } = result.data;
+          resultDiv.innerHTML = `
+            <div class="animal-info">
+              <img src="${
+                image || "https://via.placeholder.com/150"
+              }" alt="${name}">
+              <div>
+                <h2>${name}</h2>
+                <p>${info}</p>
+              </div>
+            </div>
+          `;
+          if (result.data.breeds && result.data.breeds.length > 0) {
+            const breedsSection = document.createElement("div");
+            breedsSection.innerHTML = "<h3>Breeds/Variants:</h3>";
+            const breedList = document.createElement("div");
+            breedList.className = "breed-list";
+            result.data.breeds.forEach((breed) => {
+              const breedDiv = document.createElement("div");
+              breedDiv.className = "breed-item";
+              breedDiv.innerHTML = `
+                ${
+                  breed.image
+                    ? `<img src="${breed.image}" alt="${breed.name}" onerror="this.style.display='none';this.insertAdjacentHTML('afterend', '<span class=\'emoji\'>😢</span>');">`
+                    : '<span class="emoji">😢</span>'
+                }
+                <span>${breed.name}</span>
+              `;
+              breedList.appendChild(breedDiv);
+            });
+            breedsSection.appendChild(breedList);
+            resultDiv.appendChild(breedsSection);
+          }
+        }
+        fadeInResult();
+      }
+      document
+        .getElementById("animalForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const animalName = document.getElementById("animalName").value;
+          const response = await fetch("/add_animal", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name: animalName }),
+          });
+          const result = await response.json();
+          renderAnimalResult(result);
+        });
+      document
+        .getElementById("randomBtn")
+        .addEventListener("click", async () => {
+          const response = await fetch("/random_animal");
+          const result = await response.json();
+          renderAnimalResult(result);
+        });
+    </script>
+  </body>
+</html>
