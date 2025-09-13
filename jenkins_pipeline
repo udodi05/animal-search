@@ -1,0 +1,5 @@
+app.py
+docker-compose.yml
+Dockerfile
+jenkins_pipeline
+templates
