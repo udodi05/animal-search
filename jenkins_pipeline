@@ -1,5 +1,1 @@
-app.py
-docker-compose.yml
-Dockerfile
-jenkins_pipeline
-templates
+echo "fixing this to enable poll scm on jenkins"
