@@ -1,3 +1,4 @@
+#Compose file for animal search app
 services:
   couchdb:
     image: couchdb:3
